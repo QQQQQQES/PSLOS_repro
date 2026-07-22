@@ -1,0 +1,14 @@
+# Generated Catkin output
+/build/
+/devel/
+/install/
+/logs/
+
+# Python cache and runtime artifacts
+__pycache__/
+*.py[cod]
+
+# Documentation intentionally excluded from the GitHub upload
+*.md
+doc/
+docs/

@@ -1,0 +1,64 @@
+# 默认禁止 PX4 输出，只有启动参数显式授权后才会发送指令。
+enable_px4_output: false             # PX4 指令总开关；默认必须保持关闭
+require_control_enable: true         # 是否要求外部安全进程持续授权
+control_enable_timeout_s: 0.25       # ROS 时间下授权心跳超时（秒）
+control_enable_wall_timeout_s: 0.25  # 墙上时间下授权心跳超时（秒）
+publish_rate_hz: 80.0                # PX4 指令发布频率（赫兹）
+command_timeout_s: 0.10              # 控制参考量超时时间（秒）
+control_mode: body_rate              # 控制模式：姿态或机体角速度
+
+# 以下数值必须在实机辨识和验证后才能用于飞行。
+hover_thrust: 0.50                    # 悬停归一化推力
+min_thrust: 0.10                      # 最小归一化推力
+max_thrust: 0.65                      # 最大归一化推力
+max_body_rate_rad_s: [0.6, 0.6, 0.6] # 滚转/俯仰/偏航角速度上限
+max_tilt_deg: 25.0                    # 最大倾角（度）
+
+thrust_attitude_projection:
+  enabled: true          # 是否按当前倾角补偿垂直推力
+  minimum_scale: 0.5     # 推力投影比例下限，防止补偿过大
+  max_imu_age_s: 0.10    # 补偿所用 IMU 数据最大延迟（秒）
+
+rate_reversal_boost:
+  enabled: true                            # 是否启用角速度跟踪补偿
+  feedback_mode: tracking_error            # 默认补偿模式：跟踪误差
+  axis_feedback_modes: [tracking_error, tracking_error, tracking_error] # 三轴补偿模式
+  gains: [0.0, 0.6, 1.2]                  # 三轴反向制动增益（旧模式使用）
+  damping_gains: [0.0, 0.2, 0.6]          # 三轴角速度阻尼增益（旧模式使用）
+  tracking_error_gains: [0.0, 0.3, 0.3]   # 三轴角速度跟踪误差增益
+  filter_tau_s: 0.04                       # 实测角速度低通时间常数（秒）
+  max_correction_rad_s: [0.25, 0.35, 0.35] # 三轴最大补偿角速度
+  reset_gap_s: 0.20                        # IMU 间隔超过此值时重置滤波（秒）
+  max_imu_age_s: 0.10                      # 补偿所用 IMU 数据最大延迟（秒）
+
+tight_fov_pixel_guard:
+  enabled: true                   # 是否启用窄轴目标回中保护
+  acceptance_limit_deg: 1.0       # 目标窄轴允许偏角上限（度）
+  activation_deg: 0.25            # 开始主动回中的偏角（度）
+  rate_gain: 10.0                 # 偏角到回中角速度的增益
+  max_guarded_rate_rad_s: 0.30    # 保护器最大回中角速度
+  max_feature_age_s: 0.12         # 可用于保护的特征最大延迟（秒）
+  derivative_enabled: true        # 是否根据像素运动趋势提前干预
+  prediction_horizon_s: 0.12      # 像素趋势前向预测时长（秒）
+  derivative_filter_tau_s: 0.08   # 像素导数低通时间常数（秒）
+  derivative_reset_gap_s: 0.12    # 特征间隔超过此值时重置导数（秒）
+  max_raw_derivative_s_inv: 0.25  # 原始归一化像素变化率上限
+  max_derivative_rate_rad_s: 0.05 # 导数项最大附加角速度
+  body_rate_prediction_enabled: true # 是否用实测机体角速度预测目标运动
+  body_rate_prediction_horizon_s: 0.04 # 机体角速度预测时长（秒）
+  body_rate_deadband_rad_s: 0.03  # 忽略的小角速度死区
+
+vertical_visibility_guard:
+  enabled: true                   # 是否启用图像上下边缘可见性保护
+  activation_margin_px: 80.0      # 距上下边缘多少像素开始回中
+  rate_gain: 6.0                  # 垂直像素偏差到俯仰角速度的增益
+  max_guarded_rate_rad_s: 0.60    # 保护器最大俯仰角速度
+  max_feature_age_s: 0.12         # 可用于保护的特征最大延迟（秒）
+  derivative_enabled: true        # 是否根据垂直像素趋势提前干预
+  prediction_horizon_s: 0.12      # 垂直像素趋势预测时长（秒）
+  derivative_filter_tau_s: 0.08   # 垂直像素导数低通时间常数（秒）
+  derivative_reset_gap_s: 0.12    # 特征间隔超过此值时重置导数（秒）
+  max_raw_derivative_s_inv: 1.0   # 原始归一化垂直像素变化率上限
+  max_derivative_rate_rad_s: 0.20 # 导数项最大附加俯仰角速度
+  restoring_sign: 1.0             # 像素方向到俯仰方向的符号映射
+  minimum_thrust_scale: 0.7       # 边缘保护时最低推力缩放比例

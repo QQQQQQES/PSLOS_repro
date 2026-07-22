@@ -1,0 +1,49 @@
+std_msgs/Header header
+bool control_enable_required
+bool control_enabled
+bool output_permitted
+bool guard_enabled
+bool guard_active
+bool guard_limited
+bool guard_derivative_enabled
+bool guard_derivative_initialized
+bool feature_valid
+float64 feature_age
+float64 measured_s_tight
+float64 measured_margin_tight
+float64 filtered_s_tight_rate
+float64 outward_s_tight_rate
+float64 guard_derivative_rate
+geometry_msgs/Vector3 reference_body_rate
+# Applied feedback-stage delta for either legacy reversal or tracking-error mode.
+geometry_msgs/Vector3 damping_correction_body_rate
+# Repeated typed configuration evidence; unlike startup rosout this is recorded
+# with every blocked or permitted adapter audit.
+bool rate_feedback_enabled
+string[3] rate_axis_feedback_modes
+geometry_msgs/Vector3 rate_reversal_gains
+geometry_msgs/Vector3 rate_damping_gains
+geometry_msgs/Vector3 rate_tracking_error_gains
+float64 rate_filter_tau_s
+geometry_msgs/Vector3 rate_max_correction_rad_s
+float64 rate_reset_gap_s
+float64 rate_max_imu_age_s
+# Tight-axis IMU lead configuration and per-tick evidence.
+bool guard_body_rate_prediction_enabled
+float64 guard_body_rate_prediction_horizon_s
+float64 guard_body_rate_deadband_rad_s
+bool guard_body_rate_prediction_initialized
+bool guard_body_rate_prediction_active
+float64 guard_measured_body_yaw_rate_rad_s
+float64 guard_rotational_s_tight_rate
+float64 guard_body_rate_prediction_interval_s
+float64 guard_body_rate_predicted_s_tight
+float64 guard_body_rate_prediction_rate_rad_s
+geometry_msgs/Vector3 guard_correction_body_rate
+geometry_msgs/Vector3 pre_safety_body_rate
+geometry_msgs/Vector3 sent_body_rate
+float64 reference_normalized_thrust
+float64 sent_thrust
+bool rate_saturated
+bool thrust_saturated
+string reason

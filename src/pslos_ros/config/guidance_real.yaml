@@ -1,0 +1,38 @@
+paper:
+  c1: 0.6                         # 接近速度增益；越大接近越快
+  c2: 1.0                         # 相对速度误差反馈增益
+  c_omega: 1.0                    # 视线角速度控制增益
+  alpha_lon_deg: 55.0             # 长轴视场约束半角（度）
+  alpha_lat_deg: 1.0              # 窄轴视场约束半角（度）
+  tight_axis_gain: 4.0            # 窄轴回中增益
+  formula_mode: symmetric_gradient # 实飞使用的对称梯度公式
+  force_law_mode: lyapunov_corrected # 实飞使用的李雅普诺夫修正力律
+
+camera:
+  # 相机光学系到机体系的旋转矩阵，实机需标定。
+  rotation_body_camera: [0.0, 0.0, 1.0,
+                         -1.0, 0.0, 0.0,
+                         0.0, -1.0, 0.0]
+
+platform_adapter:
+  mass_kg: 1.0                              # 飞行器质量（千克），实机需测量
+  gravity_force_world: [0.0, 0.0, -9.80665] # 世界系重力向量，按质量配置
+  aerodynamic_force_world: [0.0, 0.0, 0.0]  # 世界系气动力补偿向量
+  maximum_closing_speed_mps: 3.0            # 最大目标接近速度（米/秒）
+  maximum_command_acceleration_mps2: 2.0    # 最大指令加速度（米/秒平方）
+  minimum_closing_range_m: 8.0              # 计算接近速度时使用的最小距离（米）
+  attitude_tracking_gain: 3.0               # 期望姿态跟踪增益
+  long_axis_fov_angular_rate_weight: 0.15   # 长轴视场角速度项最低权重
+  long_axis_fov_recovery_start_deg: 18.0    # 开始恢复长轴视场权重的偏角（度）
+  long_axis_fov_full_recovery_deg: 22.0     # 完全恢复长轴视场权重的偏角（度）
+  use_current_los_for_position_direction: true # 是否用当前像素视线作为追踪方向
+  current_los_rate_guidance_enabled: false  # 是否启用当前像素视线角速度制导
+  radial_velocity_feedback_only: true       # 是否只反馈视线径向速度误差
+  long_axis_barrier_policy: hard            # 长轴越界策略：hard 为直接拒绝
+  minimum_long_axis_denominator: 0.01       # 软恢复模式的屏障分母下限
+
+safety:
+  capture_radius_m: 0.8               # 判定拦截完成的距离阈值（米）
+  max_state_age_s: 0.10               # 估计状态最大允许延迟（秒）
+  require_current_pixel_los: true     # 是否必须有实时像素视线才输出参考量
+  max_feature_age_s: 0.12             # 图像特征最大允许延迟（秒）

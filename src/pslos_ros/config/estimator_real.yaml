@@ -1,0 +1,61 @@
+camera:
+  # 相机光学系到机体系的旋转矩阵，实机需标定。
+  rotation_body_camera: [0.0, 0.0, 1.0,
+                         -1.0, 0.0, 0.0,
+                         0.0, -1.0, 0.0]
+
+initialization:
+  # 方位角无法直接给出距离，以下先验须按每次实飞任务设置。
+  initial_range_m: 100.0                 # 目标初始距离先验（米）
+  initial_range_std_m: 30.0              # 初始距离不确定度（米）
+  initial_attitude_std_rad: 0.03          # 初始姿态不确定度（弧度）
+  initial_lateral_std_m: 2.0              # 初始横向位置不确定度（米）
+  initial_velocity_std_mps: 5.0           # 初始相对速度不确定度（米/秒）
+  initial_gyro_bias_std_rps: 0.03         # 初始陀螺仪零偏不确定度
+  initial_accel_bias_std_mps2: 0.3        # 初始加速度计零偏不确定度
+  bias_calibration_s: 2.0                 # 启动静止零偏标定时长（秒）
+  minimum_bias_samples: 100               # 零偏标定所需最少 IMU 样本数
+  feature_loss_reset_s: 0.5               # 视觉丢失超过此时长后重置（秒）
+  require_vision_ready: true              # 是否等待视觉就绪信号再初始化
+  gravity_align_attitude: false           # 是否用静止重力修正初始横滚/俯仰
+  gravity_align_attitude_max_correction_deg: 5.0  # 重力对齐最大允许修正角（度）
+
+noise:
+  # 保守占位值，必须用实机 IMU 与检测器日志辨识。
+  gyro_std: 0.015                 # 陀螺仪测量噪声标准差
+  accel_std: 0.20                 # 加速度计测量噪声标准差
+  gyro_bias_rw_std: 0.0005        # 陀螺仪零偏随机游走强度
+  accel_bias_rw_std: 0.01         # 加速度计零偏随机游走强度
+  feature_process_std: 0.002      # 图像特征过程噪声
+  feature_measurement_std: 0.009  # 图像特征测量噪声
+  target_accel_process_std: 0.0   # 目标机动加速度过程噪声；0 假设不机动
+
+delay:
+  max_history_s: 0.50              # 延迟补偿保留的状态历史时长（秒）
+  max_imu_step_s: 0.03             # 单次 IMU 积分最大时间步（秒）
+  history_sync_tolerance_s: 0.008  # 历史状态时间同步容差（秒）
+  innovation_gate_chi2: 25.0       # 视觉更新卡方门限；越小越严格
+
+attitude_aiding:
+  enabled: true                 # 是否用平台姿态辅助 EKF
+  measurement_std_rad: 0.02     # 姿态辅助测量噪声（弧度）
+  enforce_innovation_gate: true # 是否拒绝姿态异常值
+  max_residual_deg: 20.0        # 姿态残差最大允许值（度）
+
+velocity_aiding:
+  enabled: false                         # 是否用平台速度辅助 EKF
+  stationary_target: false              # 是否明确假设目标静止
+  radial_only: false                    # 是否只融合视线径向速度
+  transverse_measurement_std_mps: 0.0   # 横向速度噪声；0 表示禁用横向融合
+  transverse_activation_range_m: 0.0    # 横向融合生效距离；0 表示全距离
+  measurement_std_mps: 0.1              # 速度辅助测量噪声（米/秒）
+  enforce_innovation_gate: true         # 是否拒绝速度异常值
+  max_residual_mps: 3.0                 # 速度残差最大允许值（米/秒）
+  max_future_lead_s: 0.02               # 速度时间戳最大超前量（秒）
+
+validity:
+  minimum_measurements: 6       # 输出有效状态前的最少视觉更新数
+  max_position_std_m: 8.0       # 位置标准差上限（米）
+  max_vision_age_s: 0.20        # 视觉数据最大允许延迟（秒）
+
+gravity_world: [0.0, 0.0, -9.80665]  # 世界坐标系重力加速度向量

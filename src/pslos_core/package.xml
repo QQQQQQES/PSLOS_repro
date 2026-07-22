@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>pslos_core</name>
+  <version>0.1.0</version>
+  <description>ROS-independent PS-LOS geometry and control equations.</description>
+  <maintainer email="zml@example.com">zml</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <test_depend>python3-nose</test_depend>
+</package>

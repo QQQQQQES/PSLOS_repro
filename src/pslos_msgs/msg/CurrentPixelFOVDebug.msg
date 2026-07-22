@@ -1,0 +1,10 @@
+std_msgs/Header header
+time feature_stamp
+float64 feature_age
+string feature_frame_id
+float64 x_normalized
+float64 y_normalized
+float64 s_long
+float64 s_tight
+bool feature_valid
+string reason

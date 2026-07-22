@@ -1,0 +1,69 @@
+<launch>
+  <!-- The detector is external and must publish PointStamped: x=u, y=v, z=confidence. -->
+  <arg name="target_pixel_topic" default="/pixelstrike/target_pixel" />
+  <arg name="imu_topic" default="/mavros/imu/data" />
+  <arg name="velocity_topic" default="/mavros/local_position/velocity_local" />
+  <arg name="attitude_target_topic" default="/mavros/setpoint_raw/attitude" />
+  <arg name="control_enable_topic" default="/pslos/flight/control_enable" />
+  <arg name="vision_ready_topic" default="/pslos/flight/vision_ready" />
+
+  <arg name="camera_config" default="$(find pslos_ros)/config/camera_real.yaml" />
+  <arg name="estimator_config" default="$(find pslos_ros)/config/estimator_real.yaml" />
+  <arg name="guidance_config" default="$(find pslos_ros)/config/guidance_real.yaml" />
+  <arg name="px4_config" default="$(find pslos_ros)/config/px4_real.yaml" />
+
+  <!-- 是否启用offboard，这里调试los的时候可以先false -->
+  <!-- 此阶段不进入 OFFBOARD，只检查：
+  - 像素左右、上下方向是否正确
+  - IMU 是否稳定在 100 Hz 以上
+  - 时间戳是否连续
+  - /pslos/estimate 是否出现跳变
+  - /pslos/debug 的 valid 和 reason
+  - 目标静止时估计速度是否持续漂移 -->
+  
+  <arg name="enable_px4_output" default="false" />
+  <arg name="initial_range_m" default="100.0" />
+  <arg name="initial_range_std_m" default="30.0" />
+
+  <node pkg="pslos_ros" type="feature_adapter_node.py" name="pslos_feature_adapter" output="screen">
+    <rosparam command="load" file="$(arg camera_config)" />
+    <remap from="external_pixel" to="$(arg target_pixel_topic)" />
+    <remap from="feature" to="/pslos/feature" />
+  </node>
+
+  <node pkg="pslos_ros" type="dcekf_node.py" name="pslos_dcekf" output="screen">
+    <env name="OPENBLAS_NUM_THREADS" value="1" />
+    <env name="OMP_NUM_THREADS" value="1" />
+    <rosparam command="load" file="$(arg estimator_config)" />
+    <param name="initialization/initial_range_m" value="$(arg initial_range_m)" />
+    <param name="initialization/initial_range_std_m" value="$(arg initial_range_std_m)" />
+    <remap from="imu" to="$(arg imu_topic)" />
+    <remap from="platform_velocity" to="$(arg velocity_topic)" />
+    <remap from="feature" to="/pslos/feature" />
+    <remap from="vision_ready" to="$(arg vision_ready_topic)" />
+    <remap from="relative_state" to="/pslos/estimate" />
+  </node>
+
+  <node pkg="pslos_ros" type="reference_node.py" name="pslos_guidance" output="screen">
+    <rosparam command="load" file="$(arg guidance_config)" />
+    <remap from="relative_state" to="/pslos/estimate" />
+    <remap from="feature" to="/pslos/feature" />
+    <remap from="reference" to="/pslos/reference" />
+    <remap from="debug" to="/pslos/debug" />
+    <remap from="current_pixel_fov_debug" to="/pslos/current_pixel_fov_debug" />
+  </node>
+
+  <node pkg="pslos_ros" type="px4_adapter_node.py" name="pslos_px4_adapter" output="screen">
+    <rosparam command="load" file="$(arg px4_config)" />
+    <rosparam command="load" file="$(arg camera_config)" />
+    <param name="enable_px4_output" value="$(arg enable_px4_output)" />
+    <param name="require_control_enable" value="true" />
+    <remap from="reference" to="/pslos/reference" />
+    <remap from="control_enable" to="$(arg control_enable_topic)" />
+    <remap from="imu" to="$(arg imu_topic)" />
+    <remap from="feature" to="/pslos/feature" />
+    <remap from="attitude_target" to="$(arg attitude_target_topic)" />
+    <remap from="adapter_debug" to="/pslos/adapter_debug" />
+    <remap from="visibility_guard_debug" to="/pslos/visibility_guard_debug" />
+  </node>
+</launch>

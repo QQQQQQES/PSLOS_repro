@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.0.2)
+project(pslos_core)
+
+find_package(catkin REQUIRED)
+catkin_python_setup()
+catkin_package()
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(test/test_geometry.py)
+  catkin_add_nosetests(test/test_controller.py)
+  catkin_add_nosetests(test/test_dcekf.py)
+  catkin_add_nosetests(test/test_command_safety.py)
+  catkin_add_nosetests(test/test_control_handoff.py)
+  catkin_add_nosetests(test/test_current_pixel_los.py)
+endif()
